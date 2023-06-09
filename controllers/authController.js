@@ -88,7 +88,7 @@ module.exports.handleLogin = async (req, res) => {
 
         const token = jwt.sign({ _id: user._id }, SECRET, { expiresIn: '2h' });
 
-        res.json({ token, user: { _id: user._id, username: user.username } });
+        res.json({ token });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');

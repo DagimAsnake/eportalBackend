@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 
 const authRoute = require('./routes/authRoute')
+const userRoute = require('./routes/userRoute')
 
 mongoose.set("strictQuery", true)
 
@@ -31,3 +32,4 @@ app.use(function (req, res, next) {
 app.use(cors());
 
 app.use("/auth", authRoute);
+app.use("/user", userRoute)
