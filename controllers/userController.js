@@ -66,3 +66,40 @@ module.exports.EditUserProfile = async function (req, res) {
         data: responseData,
     });
 };
+
+
+module.exports.ChangePassword = async function (req, res) {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, SECRET);
+    const { oldPassword, confirmNewPassword, newPassword } = req.body;
+
+    if (!(oldPassword && confirmNewPassword && newPassword)) {
+        return res.json({
+            msg: "All input is required",
+        });
+    }
+
+    if (newPassword != confirmNewPassword) {
+        return res.json({
+            msg: "Password Must Match"
+        }).status(200)
+    }
+    const user = await User.findById(decoded._id);
+    if (!user) {
+        return res.json({
+            msg: "No such user "
+        }).status(401)
+    }
+    const correctold = await bcrypt.compare(oldPassword, user.password)
+    if (!correctold) {
+        return res.json({
+            msg: "Incorrect old password"
+        }).status(200)
+    }
+    const new_pass = await bcrypt.hash(newPassword, SALT);
+    await User.findByIdAndUpdate(decoded._id, { password: new_pass });
+    return res.json({
+        msg: "Password Changed Successfully"
+    }).status(200)
+}

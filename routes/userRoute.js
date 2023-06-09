@@ -5,5 +5,6 @@ const isUserAuth = require('../util/isUserAuth')
 
 router.put("/edit", isUserAuth, userController.EditUserProfile);
 router.get('/', isUserAuth, userController.viewProfile)
+router.post("/changepassword", isUserAuth, userController.ChangePassword)
 
 module.exports = router;
