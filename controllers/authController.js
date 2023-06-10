@@ -1,8 +1,10 @@
 const User = require('../models/User')
+const Token = require('../models/Token')
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const SECRET = "thisissecret"
 const SALT = 12
+const sendEmail = require("../util/sendEmail")
 
 module.exports.createUser = async (req, res) => {
     try {
@@ -94,3 +96,66 @@ module.exports.handleLogin = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
+
+module.exports.forgetPassword = async function (req, res) {
+    const { email } = req.body
+    const user = await User.findOne({ email: email })
+    if (!user) {
+        return res.json({ msg: "User with the given email dont exist" }).status(401)
+    }
+    let token = await Token.findOne({ userId: user._id })
+    if (!token) {
+        let data = {
+            userId: user._id,
+            token: jwt.sign({ id: user._id }, SECRET)
+        }
+        token = new Token(data)
+        await token.save()
+    }
+    const link = `http://127.0.0.1:5173/auth/passwordreset/${user._id}/${token.token}`
+    await sendEmail(
+        user.email,
+        "Eportal Reset",
+        `Your password reset link is here:  ${link}`
+    )
+    return res.json({
+        msg: "Reset password link is sent via Email Successfully"
+    }).status(200)
+}
+
+
+module.exports.changeForgetPassword = async function (req, res) {
+    const { token, userId } = req.params
+    const user = await User.findById(userId)
+    if (!user) {
+        return res.json({
+            msg: "Invalid or Expired Token"
+        }).status(401)
+    }
+    const check_token = await Token.findOne({ token: token })
+    if (!check_token) {
+        return res.json({
+            msg: "Invalid or Expired Token"
+        }).status(401)
+    }
+
+    const password = req.body.newPassword
+    const confirm_password = req.body.confirmNewPassword
+
+    if (password != confirm_password) {
+        return res
+            .json({
+                msg: "Passwords Must Match",
+            })
+            .status(401);
+    }
+
+    const hashedPassword = await bcrypt.hash(password, SALT)
+    user.password = hashedPassword
+    await user.save()
+    await check_token.deleteToken();
+    return res.json({
+        msg: "Password Changed Successfully"
+    })
+}
