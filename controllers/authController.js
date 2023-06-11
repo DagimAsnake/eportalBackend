@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken")
 const SECRET = "thisissecret"
 const SALT = 12
 const sendEmail = require("../util/sendEmail")
+const base64url = require('base64url');
 
 module.exports.createUser = async (req, res) => {
     try {
@@ -113,7 +114,13 @@ module.exports.forgetPassword = async function (req, res) {
         token = new Token(data)
         await token.save()
     }
-    const link = `http://127.0.0.1:5173/auth/passwordreset/${user._id}/${token.token}`
+
+    // Encode the token
+    const encodedToken = base64url.encode(token.token);
+
+    // Create the link with the encoded token
+    const link = `http://localhost:3000/auth/passwordreset/${user._id}/${encodedToken}`;
+
     await sendEmail(
         user.email,
         "Eportal Reset",
@@ -133,7 +140,8 @@ module.exports.changeForgetPassword = async function (req, res) {
             msg: "Invalid or Expired Token"
         }).status(401)
     }
-    const check_token = await Token.findOne({ token: token })
+    const decodedToken = base64url.decode(token);
+    const check_token = await Token.findOne({ token: decodedToken })
     if (!check_token) {
         return res.json({
             msg: "Invalid or Expired Token"
