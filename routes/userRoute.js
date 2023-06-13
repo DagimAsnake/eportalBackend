@@ -268,4 +268,8 @@ router.get('/', isUserAuth, userController.viewProfile)
  */
 router.post("/changepassword", isUserAuth, userController.ChangePassword)
 
+router.post("/addsector", isUserAuth, userController.AddSector)
+
+router.get('/sector', isUserAuth, userController.viewSector)
+
 module.exports = router;

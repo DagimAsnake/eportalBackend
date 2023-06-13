@@ -35,6 +35,9 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String
     },
+    sector: {
+        type: String
+    },
     UUID: {
         type: String,
         default: uuidv4

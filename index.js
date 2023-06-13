@@ -9,6 +9,7 @@ const swaggerUi = require('swagger-ui-express');
 
 const authRoute = require('./routes/authRoute')
 const userRoute = require('./routes/userRoute')
+const branchRoute = require("./routes/branchRoute")
 
 mongoose.set("strictQuery", true)
 
@@ -57,3 +58,4 @@ app.use(cors());
 
 app.use("/auth", authRoute);
 app.use("/user", userRoute)
+app.use("/branch", branchRoute)

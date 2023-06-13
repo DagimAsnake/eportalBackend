@@ -103,3 +103,44 @@ module.exports.ChangePassword = async function (req, res) {
         msg: "Password Changed Successfully"
     }).status(200)
 }
+
+
+module.exports.AddSector = async function (req, res) {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, SECRET);
+    const { sector } = req.body;
+
+    if (!(sector)) {
+        return res.json({
+            msg: "All input is required",
+        });
+    }
+
+    const user = await User.findById(decoded._id);
+    if (!user) {
+        return res.json({
+            msg: "No such user "
+        }).status(401)
+    }
+
+    user.sector = sector;
+    const savedUser = await user.save();
+
+    return res.json({
+        msg: "sector added Successfully"
+    }).status(200)
+}
+
+module.exports.viewSector = async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, SECRET);
+        const user = await User.findById(decoded._id).select('-password');
+        res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+};
