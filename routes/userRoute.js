@@ -268,8 +268,129 @@ router.get('/', isUserAuth, userController.viewProfile)
  */
 router.post("/changepassword", isUserAuth, userController.ChangePassword)
 
+
+/**
+ * @swagger
+ * /user/addsector:
+ *   post:
+ *     summary: Add a sector to the user
+ *     description: Endpoint to add a sector to the authenticated user's profile
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               sector:
+ *                 type: string
+ *                 description: The sector to add to the user's profile
+ *                 example: "Technology"
+ *             required:
+ *               - sector
+ *     responses:
+ *       200:
+ *         description: The sector was added to the user's profile successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   description: A success message
+ *                   example: "sector added Successfully"
+ *       400:
+ *         description: Invalid input provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   description: An error message
+ *                   example: "All input is required"
+ *       401:
+ *         description: Unauthorized request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   description: An error message
+ *                   example: "No such user"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   description: An error message
+ *                   example: "Server error"
+ */
 router.post("/addsector", isUserAuth, userController.AddSector)
 
+/**
+ * @swagger
+ * /user/sector:
+ *   get:
+ *     summary: Get the user's sector
+ *     description: Endpoint to get the sector of the authenticated user
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Returns the user's sector
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier of the user
+ *                   example: 60c5f7c4b76a4c002098a7b6
+ *                 name:
+ *                   type: string
+ *                   description: The name of the user
+ *                   example: "John Doe"
+ *                 email:
+ *                   type: string
+ *                   description: The email address of the user
+ *                   example: "johndoe@example.com"
+ *                 sector:
+ *                   type: string
+ *                   description: The sector of the user
+ *                   example: "Technology"
+ *       401:
+ *         description: Unauthorized request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   description: An error message
+ *                   example: "Unauthorized"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   description: An error message
+ *                   example: "Server error"
+ */
 router.get('/sector', isUserAuth, userController.viewSector)
 
 module.exports = router;
